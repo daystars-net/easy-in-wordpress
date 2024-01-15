@@ -1,0 +1,59 @@
+version: '3.9'
+services:
+
+  wordpress:
+    image: wordpress:6-php8.2-fpm-alpine
+    container_name: wp-wordpress
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - wordpress
+    depends_on:
+      - database
+    volumes:
+      - ${WORDPRESS_LOCAL_HOME:-./wordpress}:/var/www/html
+      - ${WORDPRESS_UPLOADS_CONFIG:-./config/uploads.ini}:/usr/local/etc/php/conf.d/uploads.ini
+    environment:
+      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST:-database:3306}
+      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME:-wordpress}
+      - WORDPRESS_DB_USER=${WORDPRESS_DB_USER:-wordpress}
+      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD:-password}
+
+  database:
+    image: mysql:8.2
+    container_name: wp-database
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - wordpress
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-wordpress}
+      - MYSQL_USER=${MYSQL_USER:-wordpress}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-password}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-password}
+    volumes:
+      - ${MYSQL_LOCAL_HOME:-./dbdata}:/var/lib/mysql
+      
+  caddy:
+    image: caddy:2
+    container_name: wp-caddy
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - wordpress
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ${WORDPRESS_LOCAL_HOME:-./wordpress}:/var/www/html
+      - ${CADDY_FILE:-./caddy/Caddyfile}:/etc/caddy/Caddyfile
+      - ${CADDY_DATA:-./caddy/data}:/data
+      - ${CADDY_CONFIG:-./caddy/config}:/config
+
+networks:
+  wordpress:
+    name: wp-wordpress
+    driver: bridge

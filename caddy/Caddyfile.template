@@ -1,0 +1,10 @@
+{your_domain} {
+    root * /var/www/html
+    encode gzip
+    php_fastcgi wordpress:9000
+    file_server
+
+    request_body {
+        max_size 75MB
+    }
+}
