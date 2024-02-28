@@ -2,7 +2,7 @@ version: '3.9'
 services:
 
   wordpress:
-    image: wordpress:6-php8.2-fpm-alpine
+    build: .
     container_name: wp-wordpress
     env_file:
       - .env
