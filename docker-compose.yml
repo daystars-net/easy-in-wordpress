@@ -11,6 +11,7 @@ services:
       - wordpress
     depends_on:
       - database
+    user: ":${WORDPRESS_GID:-1002}"
     volumes:
       - ${WORDPRESS_LOCAL_HOME:-./wordpress}:/var/www/html
       - ${WORDPRESS_UPLOADS_CONFIG:-./config/uploads.ini}:/usr/local/etc/php/conf.d/uploads.ini
