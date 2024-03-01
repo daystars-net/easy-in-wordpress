@@ -2,7 +2,7 @@ version: '3.9'
 services:
 
   wordpress:
-    build: .
+    build:
       context: .
       dockerfile: Dockerfile
       args:
