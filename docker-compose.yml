@@ -3,6 +3,11 @@ services:
 
   wordpress:
     build: .
+      context: .
+      dockerfile: Dockerfile
+      args:
+        WORDPRESS_UID: ${WORDPRESS_UID}
+        WORDPRESS_GID: ${WORDPRESS_GID}
     container_name: wp-wordpress
     env_file:
       - .env
